@@ -1,8 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.library")
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.dagger.hilt)
-    id("kotlin-kapt")
 }
 
 android {
@@ -10,12 +8,9 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.hman.calendarcheckercore"
+        //applicationId = "com.hman.calendarcheckercore"
         minSdk = 33
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,14 +32,7 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
-    implementation(libs.logging.interceptor)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.kotlinx.coroutines.core)
