@@ -20,7 +20,7 @@ ___________________________
 
 --------------------------------
 **How-To-Use**
-- Call `HolidayChecker.initialize(calendarificKey: String, abstractKey: String, holidayKey: String)` to initialize the SDK. Note that API key parameters are optional.
+- Call `HolidayChecker.initialize(calendarificKey: String, abstractKey: String, holidayKey: String)` to initialize the SDK. Note that API key parameters are optional, you can pass in your own API keys or don't and use mine
 
 - Call `HolidayChecker.isHoliday(year: Int,  month: Int,  day: Int,  checkType: Int = CheckType.ANY.value, onSuccess: (Boolean) -> Unit,  onFailure: (List<BaseResponse.Error>) -> Unit)` to use the SDK. Result will be returned via `onSuccess: (Boolean) -> Unit`, while possible errors and exceptions will be returned via `onFailure: (List<BaseResponse.Error>) -> Unit`
 
