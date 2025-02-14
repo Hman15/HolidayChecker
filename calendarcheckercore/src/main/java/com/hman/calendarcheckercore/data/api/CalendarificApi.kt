@@ -10,11 +10,11 @@ import retrofit2.http.Query
 interface CalendarificApi {
     @GET("holidays")
     suspend fun getHolidays(
-        @Query("api_key") apiKey: String = HolidayChecker.calendarificApiKey,
         @Query("country") country: String,
         @Query("year") year: Int,
         @Query("month") month: Int,
         @Query("day") day: Int,
+        @Query("api_key") apiKey: String = HolidayChecker.calendarificApiKey
     ): Response<CalendarificResponse?>
 }
 
@@ -30,7 +30,7 @@ object CalendarificMapper {
                     )
                 }
             } ?: emptyList()
-            println("calendarific success: ${holidays}")
+            println("calendarific success: $holidays")
             BaseResponse.Success(holidays)
         } else {
             val errorMessage = try {

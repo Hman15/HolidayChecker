@@ -24,7 +24,7 @@ fun main() = runBlocking {
         year = year,
         month = month,
         day = day,
-        state = state,
+        checkType = state,
         onSuccess = {
             println("Is Holiday: $it")
         },

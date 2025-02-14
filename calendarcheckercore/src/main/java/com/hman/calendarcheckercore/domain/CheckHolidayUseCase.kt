@@ -25,37 +25,37 @@ class CheckHolidayUseCase(
     }
 
     private suspend fun performHolidayCheck(param: CheckHolidayParam) {
-        val result = calendarRepository.getHoliday(param.country, param.year, param.month, param.day)
+        calendarRepository.getHoliday(param.country, param.year, param.month, param.day)
+            .collect { result ->
+                val successfulResults = result.filterIsInstance<BaseResponse.Success<List<BaseHoliday>>>()
+                val errorResults = result.filterIsInstance<BaseResponse.Error>()
 
-        val successfulResults = result.filterIsInstance<BaseResponse.Success<List<BaseHoliday>>>()
-        val errorResults = result.filterIsInstance<BaseResponse.Error>()
+                val isHoliday = when (param.checkType) {
+                    CheckType.ANY.value -> {
+                        successfulResults.any { it.data.isNotEmpty() }
+                    }
 
-        val isHoliday = when (param.checkType) {
-            CheckType.ANY.value -> {
-                successfulResults.any { it.data.isNotEmpty() }
+                    CheckType.ALL.value -> {
+                        successfulResults.all { it.data.isNotEmpty() }
+                    }
+
+                    CheckType.CONSENSUS.value -> {
+                        val totalApis = result.size
+                        val apisWithHoliday = successfulResults.count { it.data.isNotEmpty() }
+                        apisWithHoliday > totalApis / 2
+                    }
+
+                    else -> false
+                }
+
+                if (successfulResults.isNotEmpty()) {
+                    param.onSuccess.invoke(isHoliday)
+                }
+                if (errorResults.isNotEmpty()) {
+                    param.onFailure.invoke(errorResults)
+                }
             }
-
-            CheckType.ALL.value -> {
-                successfulResults.all { it.data.isNotEmpty() }
-            }
-
-            CheckType.CONSENSUS.value -> {
-                val totalApis = result.size
-                val apisWithHoliday = successfulResults.count { it.data.isNotEmpty() }
-                apisWithHoliday > totalApis / 2
-            }
-
-            else -> false
-        }
-
-        // Report holiday check results.
-        if (successfulResults.isNotEmpty()) {
-            param.onSuccess.invoke(isHoliday)
-        } else if (errorResults.isNotEmpty()) {
-            param.onFailure.invoke(errorResults)
-        }
     }
-
 }
 
 data class CheckHolidayParam(

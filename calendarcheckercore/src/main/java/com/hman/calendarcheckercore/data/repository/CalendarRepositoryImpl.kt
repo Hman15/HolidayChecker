@@ -3,6 +3,7 @@ package com.hman.calendarcheckercore.data.repository
 import com.hman.calendarcheckercore.data.api.*
 import com.hman.calendarcheckercore.data.model.BaseHoliday
 import com.hman.calendarcheckercore.data.model.BaseResponse
+import kotlinx.coroutines.flow.*
 
 
 class CalendarRepositoryImpl(
@@ -15,20 +16,26 @@ class CalendarRepositoryImpl(
         year: Int,
         month: Int,
         day: Int
-    ): List<BaseResponse<List<BaseHoliday>>> {
-        val calendarificResponse =
-            calendarificApi.getHolidays(country = country, year = year, month = month, day = day)
-        val abstractApiResponse =
-            abstractApi.getHolidays(country = country, year = year, month = month, day = day)
-        val holidayApiResponse =
-            holidayApi.getHolidays(country = country, year = year, month = month, day = day)
+    ): Flow<List<BaseResponse<List<BaseHoliday>>>> {
+        // Create Flows for each API call
+        val calendarificFlow = flow {
+            val response = calendarificApi.getHolidays(country, year, month, day)
+            emit(CalendarificMapper.toBaseResponse(response))
+        }
 
-        val calendarificResult = CalendarificMapper.toBaseResponse(calendarificResponse)
-        val abstractApiResult = AbstractApiMapper.toBaseResponse(abstractApiResponse)
-        val holidayApiResult = HolidayApiMapper.toBaseResponse(holidayApiResponse)
+        val abstractApiFlow = flow {
+            val response = abstractApi.getHolidays(country, year, month, day)
+            emit(AbstractApiMapper.toBaseResponse(response))
+        }
 
-        val allResults = listOf(calendarificResult, abstractApiResult, holidayApiResult)
+        val holidayApiFlow = flow {
+            val response = holidayApi.getHolidays(country, year, month, day)
+            emit(HolidayApiMapper.toBaseResponse(response))
+        }
 
-        return allResults
+        // Combine the Flows to run them concurrently
+        return combine(calendarificFlow, abstractApiFlow, holidayApiFlow) { calendarificResult, abstractApiResult, holidayApiResult ->
+            listOf(calendarificResult, abstractApiResult, holidayApiResult)
+        }
     }
 }

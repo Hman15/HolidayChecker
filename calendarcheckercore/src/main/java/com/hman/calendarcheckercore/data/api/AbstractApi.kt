@@ -10,11 +10,11 @@ import retrofit2.http.Query
 interface AbstractApi {
     @GET("v1")
     suspend fun getHolidays(
-        @Query("api_key") apiKey: String = HolidayChecker.abstractApiKey,
         @Query("country") country: String,
         @Query("year") year: Int,
         @Query("month") month: Int,
         @Query("day") day: Int,
+        @Query("api_key") apiKey: String = HolidayChecker.abstractApiKey
     ): Response<List<AbstractApiResponse>?>
 }
 

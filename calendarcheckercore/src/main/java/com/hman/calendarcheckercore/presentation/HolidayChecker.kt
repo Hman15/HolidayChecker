@@ -37,7 +37,7 @@ object HolidayChecker {
         year: Int,
         month: Int,
         day: Int,
-        state: Int = CheckType.ANY.value,
+        checkType: Int = CheckType.ANY.value,
         onSuccess: (Boolean) -> Unit,
         onFailure: (List<BaseResponse.Error>) -> Unit
     ) {
@@ -50,7 +50,7 @@ object HolidayChecker {
                 year = year,
                 month = month,
                 day = day,
-                checkType = state,
+                checkType = checkType,
                 onSuccess = { isHoliday -> onSuccess(isHoliday) },
                 onFailure = { errors -> onFailure(errors) }
             )

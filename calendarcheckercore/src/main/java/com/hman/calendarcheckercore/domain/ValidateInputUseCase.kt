@@ -43,6 +43,18 @@ class ValidateInputUseCase : UseCase<CheckHolidayParam, Unit>() {
                 return
             }
 
+            // Validate input type
+            if (checkType !in 0..2) {
+                errorList.add(
+                    BaseResponse.Error(
+                        code = 103,
+                        message = "Invalid check type: Check type must be one of ANY(0), ALL(1), CONSENSUS(2)."
+                    )
+                )
+                onFailure.invoke(errorList)
+                return
+            }
+
             // If all validations pass, invoke onSuccess.
             onSuccess.invoke(true)
         }
